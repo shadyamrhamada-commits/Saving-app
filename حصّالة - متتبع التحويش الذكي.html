@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0B0E11" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="حصّالة" />
+  <title>حصّالة | متتبع التحويش والادخار الذكي</title>
+
+  <!-- Dynamic Inline PWA Manifest for Mobile Home Screen Installation -->
+  <link rel="manifest" id="pwa-manifest" />
+
+  <!-- Google Fonts: IBM Plex Sans Arabic & Cairo + Plus Jakarta Sans for clean numbers -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            arabic: ['"IBM Plex Sans Arabic"', '"Cairo"', 'sans-serif'],
+            numbers: ['"Plus Jakarta Sans"', '"IBM Plex Sans Arabic"', 'sans-serif'],
+          },
+          colors: {
+            obsidian: {
+              950: '#07090B',
+              900: '#0B0E11',
+              850: '#101419',
+              800: '#13171D',
+              700: '#1C222B',
+              600: '#262E3A',
+            },
+            champagne: {
+              300: '#F3E5AB',
+              400: '#E5C158',
+              500: '#D4AF37',
+              600: '#B59224',
+            },
+            emeraldLux: {
+              400: '#34D399',
+              500: '#10B981',
+              600: '#059669',
+            }
+          },
+          boxShadow: {
+            'gold-glow': '0 0 35px -5px rgba(212, 175, 55, 0.22)',
+            'emerald-glow': '0 0 35px -5px rgba(16, 185, 129, 0.25)',
+            'card-elevated': '0 20px 40px -15px rgba(0, 0, 0, 0.7)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+      background-color: #0B0E11;
+      color: #F3F4F6;
+      overflow-x: hidden;
+      min-height: 100dvh;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+      font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    /* Subtle ambient background glow */
+    .ambient-bg {
+      background: 
+        radial-gradient(circle at 15% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 95%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+        #0B0E11;
+    }
+
+    /* Glassmorphism card styling */
+    .glass-card {
+      background: linear-gradient(145deg, rgba(22, 27, 34, 0.88) 0%, rgba(15, 19, 24, 0.94) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(212, 175, 55, 0.35);
+    }
+
+    /* SVG Circular Progress Smooth Transition */
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.85s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.4s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      stroke-linecap: round;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(212, 175, 55, 0.4);
+    }
+
+    /* Hide number input spinners */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    /* Micro-animations */
+    @keyframes floatPulse {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-4px); }
+    }
+    .animate-float {
+      animation: floatPulse 3.5s ease-in-out infinite;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.94) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop-in {
+      animation: popIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Confetti canvas overlay */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body class="ambient-bg text-gray-100 antialiased selection:bg-champagne-500/30 selection:text-champagne-300">
+
+  <!-- Confetti Canvas for 100% Goal Celebration -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none w-full max-w-sm px-4"></div>
+
+  <!-- Main App Wrapper -->
+  <div class="min-h-dvh flex flex-col max-w-xl mx-auto px-4 pt-5 pb-24 sm:pt-8 sm:pb-12">
+
+    <!-- Top Header / Brand & Actions -->
+    <header class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emeraldLux-500/20 via-obsidian-800 to-champagne-500/20 border border-champagne-500/30 flex items-center justify-center shadow-gold-glow">
+          <!-- Luxury Vault / Coin SVG Icon -->
+          <svg class="w-6 h-6 text-champagne-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v10M9.5 9.5c0-1.1 1.1-2 2.5-2s2.5.9 2.5 2-1.1 2-2.5 2-2.5.9-2.5 2 1.1 2 2.5 2 2.5-.9 2.5-2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            حصّالة
+            <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-champagne-500/15 text-champagne-400 border border-champagne-500/25">PRO</span>
+          </h1>
+          <p class="text-xs text-gray-400">خطّط لهدفك وحوّش بذكاء</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Install PWA Info Button (visible when applicable) -->
+        <button id="install-app-btn" onclick="handleInstallClick()" class="hidden items-center gap-1.5 px-3 py-2 rounded-xl glass-pill text-xs font-medium text-champagne-400 hover:text-champagne-300" title="تثبيت التطبيق على هاتفك">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          <span>تثبيت</span>
+        </button>
+
+        <!-- New Goal Button -->
+        <button onclick="openGoalModal('create')" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-emeraldLux-600 to-emeraldLux-500 hover:from-emeraldLux-500 hover:to-emeraldLux-400 text-obsidian-950 font-bold text-xs sm:text-sm shadow-emerald-glow transition-all active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+          </svg>
+          <span>هدف جديد</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Goals Switcher Bar (Horizontal Scrollable Pills) -->
+    <div id="goals-tabs-container" class="flex items-center gap-2 overflow-x-auto pb-2 mb-5 no-scrollbar">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+    <!-- Empty State (Shown only if user deletes all goals) -->
+    <section id="empty-state" class="hidden glass-card rounded-3xl p-8 text-center shadow-card-elevated my-auto animate-pop-in">
+      <div class="w-20 h-20 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-champagne-500/20 to-emeraldLux-500/20 border border-champagne-500/30 flex items-center justify-center text-4xl animate-float">
+        🎯
+      </div>
+      <h2 class="text-xl font-bold text-white mb-2">ابدأ أول هدف للتحويش</h2>
+      <p class="text-sm text-gray-400 max-w-xs mx-auto mb-6 leading-relaxed">
+        اكتب الحاجة اللي نفسك تشتريها والمبلغ المطلوب، وتابع تقدمك لحظة بلحظة.
+      </p>
+      <button onclick="openGoalModal('create')" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-champagne-500 to-champagne-400 text-obsidian-950 font-bold text-sm shadow-gold-glow hover:brightness-110 transition active:scale-95">
+        + إنشاء هدف تحويش الآن
+      </button>
+    </section>
+
+    <!-- Active Goal Dashboard -->
+    <main id="dashboard-content" class="space-y-5">
+
+      <!-- Hero Circular Progress Card -->
+      <section class="glass-card rounded-3xl p-6 sm:p-7 shadow-card-elevated relative overflow-hidden">
+        <!-- Subtle Top Corner Decorative Glow -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-emeraldLux-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-champagne-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Goal Header Info & Edit/Delete Controls -->
+        <div class="flex items-start justify-between gap-3 mb-4 relative z-10">
+          <div class="flex items-center gap-3">
+            <div id="active-goal-icon" class="w-12 h-12 rounded-2xl bg-obsidian-800 border border-white/10 flex items-center justify-center text-2xl shadow-inner">
+              🎧
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="active-goal-badge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emeraldLux-500/15 text-emeraldLux-400 border border-emeraldLux-500/25">
+                  قيد التحويش
+                </span>
+                <span id="active-goal-currency-badge" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-white/5 text-gray-400">
+                  EGP
+                </span>
+              </div>
+              <h2 id="active-goal-title" class="text-lg sm:text-xl font-bold text-white mt-1">
+                شراء سماعة احترافية
+              </h2>
+            </div>
+          </div>
+
+          <!-- Edit & Reset/Delete Menu Buttons -->
+          <div class="flex items-center gap-1.5">
+            <button onclick="openGoalModal('edit')" class="p-2.5 rounded-xl glass-pill text-gray-300 hover:text-champagne-400" title="تعديل الهدف">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+              </svg>
+            </button>
+            <button onclick="openConfirmDeleteModal()" class="p-2.5 rounded-xl glass-pill text-gray-400 hover:text-rose-400 hover:border-rose-500/30" title="حذف الهدف">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Circular Chart Container -->
+        <div class="relative flex items-center justify-center my-4">
+          <div class="relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center">
+            <!-- Outer ambient ring glow -->
+            <div id="ring-glow-backdrop" class="absolute inset-4 rounded-full bg-gradient-to-tr from-emeraldLux-500/10 to-champagne-500/10 blur-xl transition-all duration-700"></div>
+
+            <svg class="w-full h-full drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]" viewBox="0 0 260 260">
+              <defs>
+                <linearGradient id="luxuryRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#10B981" />
+                  <stop offset="55%" stop-color="#34D399" />
+                  <stop offset="100%" stop-color="#D4AF37" />
+                </linearGradient>
+                <linearGradient id="completedRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#D4AF37" />
+                  <stop offset="50%" stop-color="#F3E5AB" />
+                  <stop offset="100%" stop-color="#10B981" />
+                </linearGradient>
+              </defs>
+
+              <!-- Background Track Ring -->
+              <circle
+                cx="130"
+                cy="130"
+                r="108"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.06)"
+                stroke-width="16"
+              />
+
+              <!-- Subtle Dashed Inner Guide Ring -->
+              <circle
+                cx="130"
+                cy="130"
+                r="92"
+                fill="none"
+                stroke="rgba(212, 175, 55, 0.12)"
+                stroke-width="1"
+                stroke-dasharray="4 6"
+              />
+
+              <!-- Animated Progress Ring -->
+              <circle
+                id="progress-ring"
+                class="progress-ring-circle"
+                cx="130"
+                cy="130"
+                r="108"
+                fill="none"
+                stroke="url(#luxuryRingGradient)"
+                stroke-width="16"
+                stroke-dasharray="678.58"
+                stroke-dashoffset="678.58"
+              />
+            </svg>
+
+            <!-- Center Text Readout inside Circle -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
+              <span class="text-xs font-medium text-gray-400 mb-0.5">نسبة الإنجاز</span>
+              <div class="flex items-baseline justify-center gap-0.5">
+                <span id="circle-percentage" class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white tabular-nums">0</span>
+                <span class="text-lg sm:text-xl font-bold text-champagne-400">%</span>
+              </div>
+
+              <!-- Divider Line -->
+              <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent my-2"></div>
+
+              <!-- Saved Amount Highlight -->
+              <div class="text-xs text-gray-400">المبلغ المُحَوَّش</div>
+              <div id="circle-saved-amount" class="text-base sm:text-lg font-bold text-emeraldLux-400 tabular-nums mt-0.5">
+                0 ج.م
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Column Financial Summary Strip -->
+        <div class="grid grid-cols-3 gap-2.5 pt-2 relative z-10">
+          <!-- Saved -->
+          <div class="bg-obsidian-900/80 border border-white/5 rounded-2xl p-3 text-center">
+            <span class="block text-[11px] text-gray-400 mb-1">اتحوّش</span>
+            <span id="stat-saved" class="block text-sm sm:text-base font-bold text-emeraldLux-400 tabular-nums truncate">0</span>
+          </div>
+
+          <!-- Remaining -->
+          <div class="bg-obsidian-900/80 border border-champagne-500/20 rounded-2xl p-3 text-center">
+            <span class="block text-[11px] text-champagne-400/90 mb-1">ناقص لك</span>
+            <span id="stat-remaining" class="block text-sm sm:text-base font-bold text-champagne-300 tabular-nums truncate">0</span>
+          </div>
+
+          <!-- Target -->
+          <div class="bg-obsidian-900/80 border border-white/5 rounded-2xl p-3 text-center">
+            <span class="block text-[11px] text-gray-400 mb-1">الهدف الكلي</span>
+            <span id="stat-target" class="block text-sm sm:text-base font-bold text-white tabular-nums truncate">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Increment & Custom Deposit Card -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6 shadow-card-elevated space-y-5">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-champagne-400"></span>
+              إضافة سريعة بضغطة واحدة
+            </h3>
+            <span id="preset-currency-hint" class="text-[11px] text-gray-400">زيادات بالجنيه المصري</span>
+          </div>
+
+          <!-- Dynamic Currency Quick-Add Buttons -->
+          <div id="quick-presets-grid" class="grid grid-cols-4 gap-2.5">
+            <!-- Populated dynamically based on selected currency -->
+          </div>
+        </div>
+
+        <!-- Custom Amount Input & Action Buttons -->
+        <div class="pt-3 border-t border-white/5">
+          <label for="custom-amount-input" class="block text-xs font-medium text-gray-400 mb-2">
+            أو أدخل أي مبلغ مخصص (إضافة أو سحب)
+          </label>
+          <div class="flex flex-col sm:flex-row gap-2.5">
+            <div class="relative flex-1">
+              <input
+                type="number"
+                id="custom-amount-input"
+                inputmode="decimal"
+                step="any"
+                min="0"
+                placeholder="0.00"
+                class="w-full bg-obsidian-900/90 border border-white/10 focus:border-champagne-500/60 focus:ring-2 focus:ring-champagne-500/15 rounded-2xl py-3.5 pr-4 pl-16 text-lg font-bold text-white placeholder-gray-600 tabular-nums outline-none transition"
+              />
+              <span id="input-currency-symbol" class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-1 rounded-lg bg-white/5 text-champagne-400">
+                ج.م
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:flex gap-2">
+              <!-- Add (+) Button -->
+              <button
+                onclick="handleCustomTransaction('deposit')"
+                class="flex items-center justify-center gap-1.5 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emeraldLux-600 to-emeraldLux-500 hover:from-emeraldLux-500 hover:to-emeraldLux-400 text-obsidian-950 font-extrabold text-sm shadow-emerald-glow transition active:scale-95"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
+                <span>تحويش</span>
+              </button>
+
+              <!-- Withdraw (-) Button -->
+              <button
+                onclick="handleCustomTransaction('withdraw')"
+                class="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-2xl bg-obsidian-800 hover:bg-rose-500/15 border border-white/10 hover:border-rose-500/30 text-gray-300 hover:text-rose-300 font-bold text-sm transition active:scale-95"
+                title="سحب مبلغ من الحصالة"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/>
+                </svg>
+                <span>سحب</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transaction History Card -->
+      <section class="glass-card rounded-3xl p-5 sm:p-6 shadow-card-elevated">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-emeraldLux-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            سجل حركات التحويش
+          </h3>
+          <span id="history-count" class="text-xs text-gray-400 tabular-nums">0 عمليات</span>
+        </div>
+
+        <div id="transaction-history-list" class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: Create / Edit Savings Goal                         -->
+  <!-- ========================================================= -->
+  <div id="goal-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4">
+    <div class="glass-card w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 border-t sm:border border-white/15 shadow-2xl animate-pop-in max-h-[92dvh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h3 id="modal-title" class="text-lg font-bold text-white">هدف تحويش جديد</h3>
+        <button onclick="closeGoalModal()" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="goal-form" onsubmit="saveGoalFromModal(event)" class="space-y-4">
+        <input type="hidden" id="goal-form-mode" value="create" />
+
+        <!-- Icon / Category Picker -->
+        <div>
+          <label class="block text-xs font-medium text-gray-400 mb-2">اختر أيقونة الهدف</label>
+          <div id="icon-picker-grid" class="grid grid-cols-7 gap-2">
+            <!-- Populated by JS -->
+          </div>
+          <input type="hidden" id="goal-icon-input" value="🎧" />
+        </div>
+
+        <!-- Goal Reason / Title -->
+        <div>
+          <label for="goal-title-input" class="block text-xs font-medium text-gray-400 mb-1.5">
+            بتحوّش ليه؟ (اسم الهدف)
+          </label>
+          <input
+            type="text"
+            id="goal-title-input"
+            required
+            maxlength="40"
+            placeholder="مثال: شراء سماعة، لابتوب، سفرية..."
+            class="w-full bg-obsidian-900 border border-white/10 focus:border-champagne-500 rounded-2xl px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition"
+          />
+        </div>
+
+        <!-- Currency Selector -->
+        <div>
+          <label class="block text-xs font-medium text-gray-400 mb-1.5">العملة</label>
+          <div id="currency-selector-grid" class="grid grid-cols-3 gap-2">
+            <!-- Populated by JS -->
+          </div>
+          <input type="hidden" id="goal-currency-input" value="EGP" />
+        </div>
+
+        <!-- Target Amount & Initial Saved Amount -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="goal-target-input" class="block text-xs font-medium text-gray-400 mb-1.5">
+              المبلغ المطلوب (الهدف)
+            </label>
+            <input
+              type="number"
+              id="goal-target-input"
+              required
+              step="any"
+              min="1"
+              placeholder="مثال: 3500"
+              class="w-full bg-obsidian-900 border border-white/10 focus:border-champagne-500 rounded-2xl px-4 py-3 text-base font-bold text-white placeholder-gray-500 tabular-nums outline-none transition"
+            />
+          </div>
+
+          <div>
+            <label for="goal-initial-input" class="block text-xs font-medium text-gray-400 mb-1.5">
+              معاك كام حالياً؟ (اختياري)
+            </label>
+            <input
+              type="number"
+              id="goal-initial-input"
+              step="any"
+              min="0"
+              placeholder="0"
+              class="w-full bg-obsidian-900 border border-white/10 focus:border-emeraldLux-500 rounded-2xl px-4 py-3 text-base font-bold text-emeraldLux-400 placeholder-gray-500 tabular-nums outline-none transition"
+            />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button
+            type="submit"
+            class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-champagne-500 to-champagne-400 hover:brightness-110 text-obsidian-950 font-extrabold text-sm shadow-gold-glow transition active:scale-98"
+          >
+            حفظ الهدف وبدء التحويش
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: Custom Confirm Delete Dialog (No window.confirm)   -->
+  <!-- ========================================================= -->
+  <div id="delete-confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-sm rounded-3xl p-6 border border-rose-500/25 shadow-2xl animate-pop-in text-center">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-white mb-1.5">حذف هذا الهدف؟</h3>
+      <p class="text-xs text-gray-400 mb-6 leading-relaxed">
+        سيتم حذف الهدف وسجل التحويش الخاص به نهائياً ولا يمكن التراجع عن هذه الخطوة.
+      </p>
+      <div class="grid grid-cols-2 gap-2.5">
+        <button onclick="closeConfirmDeleteModal()" class="py-3 rounded-xl glass-pill text-sm font-semibold text-gray-300">
+          إلغاء
+        </button>
+        <button onclick="confirmDeleteActiveGoal()" class="py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition active:scale-95">
+          نعم، احذف
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- APPLICATION JAVASCRIPT LOGIC                              -->
+  <!-- ========================================================= -->
+  <script>
+    // 1. Currency Configurations with tailored quick-increment presets
+    const CURRENCIES = {
+      EGP: {
+        code: 'EGP',
+        symbol: 'ج.م',
+        name: 'جنيه مصري',
+        flag: '🇪🇬',
+        presets: [50, 100, 200, 500],
+        hint: 'زيادات ثابتة بالجنيه'
+      },
+      USD: {
+        code: 'USD',
+        symbol: '$',
+        name: 'دولار أمريكي',
+        flag: '🇺🇸',
+        presets: [1, 2, 5, 10],
+        hint: 'زيادات بالدولار ($1 - $10)'
+      },
+      EUR: {
+        code: 'EUR',
+        symbol: '€',
+        name: 'يورو أوروبي',
+        flag: '🇪🇺',
+        presets: [1, 2, 5, 10],
+        hint: 'زيادات باليورو (€1 - €10)'
+      },
+      SAR: {
+        code: 'SAR',
+        symbol: 'ر.س',
+        name: 'ريال سعودي',
+        flag: '🇸🇦',
+        presets: [10, 25, 50, 100],
+        hint: 'زيادات بالريال السعودي'
+      },
+      AED: {
+        code: 'AED',
+        symbol: 'د.إ',
+        name: 'درهم إماراتي',
+        flag: '🇦🇪',
+        presets: [10, 25, 50, 100],
+        hint: 'زيادات بالدرهم الإماراتي'
+      },
+      GBP: {
+        code: 'GBP',
+        symbol: '£',
+        name: 'جنيه إسترليني',
+        flag: '🇬🇧',
+        presets: [1, 2, 5, 10],
+        hint: 'زيادات بالإسترليني (£1 - £10)'
+      }
+    };
+
+    const GOAL_ICONS = ['🎧', '💻', '📱', '⌚', '✈️', '🚗', '🏠', '💍', '🎮', '📷', '🎓', '🏋️', '💰', '🎁'];
+
+    const STORAGE_KEY = 'hassala_luxury_savings_v1';
+
+    // 2. Application State
+    let appState = {
+      activeGoalId: null,
+      goals: []
+    };
+
+    // SVG Ring Geometry
+    const RING_RADIUS = 108;
+    const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS; // ~678.58
+
+    // 3. Initialize App & PWA Manifest
+    function initApp() {
+      setupDynamicPWAManifest();
+      loadState();
+      renderIconPicker();
+      renderCurrencySelector();
+      renderApp();
+    }
+
+    // Generate inline Web App Manifest so mobile users can "Add to Home Screen"
+    function setupDynamicPWAManifest() {
+      try {
+        const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#0B0E11"/><circle cx="256" cy="256" r="170" fill="none" stroke="#10B981" stroke-width="28"/><path d="M256 150v212M205 200c0-25 23-45 51-45s51 20 51 45-23 45-51 45-51 20-51 45 23 45 51 45 51-20 51-45" fill="none" stroke="#D4AF37" stroke-width="28" stroke-linecap="round"/></svg>`;
+        const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
+
+        const manifest = {
+          name: 'حصّالة - متتبع التحويش الذكي',
+          short_name: 'حصّالة',
+          description: 'تطبيق تتبع أهداف التحويش والادخار بمختلف العملات',
+          start_url: '.',
+          display: 'standalone',
+          background_color: '#0B0E11',
+          theme_color: '#0B0E11',
+          dir: 'rtl',
+          lang: 'ar',
+          icons: [
+            {
+              src: iconUrl,
+              sizes: '512x512',
+              type: 'image/svg+xml',
+              purpose: 'any maskable'
+            }
+          ]
+        };
+
+        const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(blob);
+        document.getElementById('pwa-manifest').setAttribute('href', manifestURL);
+      } catch (e) {
+        console.warn('PWA manifest setup skipped:', e);
+      }
+    }
+
+    // Handle beforeinstallprompt for Android/Chrome PWA installation
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById('install-app-btn');
+      if (btn) {
+        btn.classList.remove('hidden');
+        btn.classList.add('flex');
+      }
+    });
+
+    async function handleInstallClick() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        document.getElementById('install-app-btn').classList.add('hidden');
+      }
+      deferredInstallPrompt = null;
+    }
+
+    // 4. Persistence (LocalStorage with rich default demo goal on first visit)
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.goals)) {
+            appState = parsed;
+            if (!appState.activeGoalId && appState.goals.length > 0) {
+              appState.activeGoalId = appState.goals[0].id;
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load saved data:', err);
+      }
+
+      // First-time default sample goal ("شراء سماعة" as mentioned by user!)
+      const defaultGoalId = 'goal_' + Date.now();
+      appState = {
+        activeGoalId: defaultGoalId,
+        goals: [
+          {
+            id: defaultGoalId,
+            title: 'شراء سماعة لاسلكية',
+            icon: '🎧',
+            currency: 'EGP',
+            targetAmount: 2500,
+            savedAmount: 850,
+            createdAt: new Date().toISOString(),
+            transactions: [
+              {
+                id: 'tx_1',
+                type: 'deposit',
+                amount: 500,
+                note: 'بداية التحويش',
+                date: new Date(Date.now() - 86400000 * 2).toISOString()
+              },
+              {
+                id: 'tx_2',
+                type: 'deposit',
+                amount: 200,
+                note: 'زيادة سريعة',
+                date: new Date(Date.now() - 86400000).toISOString()
+              },
+              {
+                id: 'tx_3',
+                type: 'deposit',
+                amount: 150,
+                note: 'تحويش إضافي',
+                date: new Date().toISOString()
+              }
+            ]
+          }
+        ]
+      };
+      saveState();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        console.error('Failed to save data:', err);
+      }
+    }
+
+    function getActiveGoal() {
+      return appState.goals.find((g) => g.id === appState.activeGoalId) || null;
+    }
+
+    // 5. Formatting Utilities
+    function formatNumber(num) {
+      const clean = Math.round((Number(num) + Number.EPSILON) * 100) / 100;
+      return clean.toLocaleString('en-US', {
+        minimumFractionDigits: clean % 1 !== 0 ? 2 : 0,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function formatMoney(amount, currencyCode) {
+      const curr = CURRENCIES[currencyCode] || CURRENCIES.EGP;
+      const formatted = formatNumber(amount);
+      if (['USD', 'EUR', 'GBP'].includes(curr.code)) {
+        return `${curr.symbol}${formatted}`;
+      }
+      return `${formatted} ${curr.symbol}`;
+    }
+
+    function formatRelativeDate(isoString) {
+      try {
+        const date = new Date(isoString);
+        return date.toLocaleDateString('ar-EG', {
+          day: 'numeric',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch {
+        return '';
+      }
+    }
+
+    // 6. Main Render Function
+    function renderApp() {
+      renderGoalsTabs();
+
+      const activeGoal = getActiveGoal();
+      const emptyStateEl = document.getElementById('empty-state');
+      const dashboardEl = document.getElementById('dashboard-content');
+
+      if (!activeGoal) {
+        emptyStateEl.classList.remove('hidden');
+        dashboardEl.classList.add('hidden');
+        return;
+      }
+
+      emptyStateEl.classList.add('hidden');
+      dashboardEl.classList.remove('hidden');
+
+      const curr = CURRENCIES[activeGoal.currency] || CURRENCIES.EGP;
+      const saved = Math.max(0, Number(activeGoal.savedAmount) || 0);
+      const target = Math.max(1, Number(activeGoal.targetAmount) || 1);
+      const remaining = Math.max(0, target - saved);
+      const rawPct = (saved / target) * 100;
+      const displayPct = Math.min(100, Math.round(rawPct * 10) / 10);
+      const isCompleted = saved >= target;
+
+      // Update Header Info
+      document.getElementById('active-goal-icon').textContent = activeGoal.icon || '🎯';
+      document.getElementById('active-goal-title').textContent = activeGoal.title;
+      document.getElementById('active-goal-currency-badge').textContent = `${curr.flag} ${curr.code}`;
+
+      const badgeEl = document.getElementById('active-goal-badge');
+      if (isCompleted) {
+        badgeEl.textContent = '🎉 اكتمل الهدف بنجاح!';
+        badgeEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-champagne-500/20 text-champagne-300 border border-champagne-500/40';
+      } else {
+        badgeEl.textContent = 'قيد التحويش';
+        badgeEl.className = 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emeraldLux-500/15 text-emeraldLux-400 border border-emeraldLux-500/25';
+      }
+
+      // Update Circular SVG Progress Ring
+      const ringEl = document.getElementById('progress-ring');
+      const clampedRatio = Math.min(1, Math.max(0, saved / target));
+      const offset = RING_CIRCUMFERENCE * (1 - clampedRatio);
+      ringEl.style.strokeDasharray = `${RING_CIRCUMFERENCE}`;
+      ringEl.style.strokeDashoffset = `${offset}`;
+      ringEl.setAttribute('stroke', isCompleted ? 'url(#completedRingGradient)' : 'url(#luxuryRingGradient)');
+
+      // Update Center Readout & 3-Column Strip
+      document.getElementById('circle-percentage').textContent = Number.isInteger(displayPct) ? displayPct : displayPct.toFixed(1);
+      document.getElementById('circle-saved-amount').textContent = formatMoney(saved, curr.code);
+
+      document.getElementById('stat-saved').textContent = formatMoney(saved, curr.code);
+      document.getElementById('stat-remaining').textContent = isCompleted ? '0 (مكتمل)' : formatMoney(remaining, curr.code);
+      document.getElementById('stat-target').textContent = formatMoney(target, curr.code);
+
+      // Update Quick Increment Buttons tailored to Currency
+      document.getElementById('preset-currency-hint').textContent = curr.hint;
+      document.getElementById('input-currency-symbol').textContent = curr.symbol;
+
+      const presetsGrid = document.getElementById('quick-presets-grid');
+      presetsGrid.innerHTML = curr.presets.map((amount) => {
+        const label = ['USD', 'EUR', 'GBP'].includes(curr.code)
+          ? `+${curr.symbol}${amount}`
+          : `+${amount}`;
+        return `
+          <button
+            onclick="addTransaction('deposit', ${amount}, 'زيادة سريعة')"
+            class="group relative overflow-hidden py-3.5 px-2 rounded-2xl bg-obsidian-900/90 hover:bg-emeraldLux-500/15 border border-white/10 hover:border-emeraldLux-500/45 transition-all active:scale-95 flex flex-col items-center justify-center shadow-sm"
+          >
+            <span class="text-sm sm:text-base font-extrabold text-white group-hover:text-emeraldLux-300 tabular-nums transition-colors">
+              ${label}
+            </span>
+            <span class="text-[10px] text-gray-500 group-hover:text-emeraldLux-400/80 mt-0.5">
+              ${curr.symbol}
+            </span>
+          </button>
+        `;
+      }).join('');
+
+      // Render Transaction History
+      renderTransactionHistory(activeGoal);
+    }
+
+    function renderGoalsTabs() {
+      const container = document.getElementById('goals-tabs-container');
+      if (appState.goals.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = appState.goals.map((goal) => {
+        const isActive = goal.id === appState.activeGoalId;
+        const pct = Math.min(100, Math.round((goal.savedAmount / goal.targetAmount) * 100));
+        return `
+          <button
+            onclick="selectGoal('${goal.id}')"
+            class="shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold transition-all ${
+              isActive
+                ? 'bg-gradient-to-r from-champagne-500/20 to-emeraldLux-500/15 text-white border border-champagne-500/45 shadow-gold-glow'
+                : 'glass-pill text-gray-400 hover:text-gray-200'
+            }"
+          >
+            <span class="text-base">${goal.icon || '🎯'}</span>
+            <span class="max-w-[120px] truncate">${escapeHTML(goal.title)}</span>
+            <span class="tabular-nums text-[10px] px-1.5 py-0.5 rounded-md ${
+              isActive ? 'bg-champagne-500/25 text-champagne-300' : 'bg-white/5 text-gray-400'
+            }">${pct}%</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderTransactionHistory(goal) {
+      const listEl = document.getElementById('transaction-history-list');
+      const countEl = document.getElementById('history-count');
+      const txs = goal.transactions || [];
+
+      countEl.textContent = `${txs.length} ${txs.length === 1 ? 'عملية' : 'عمليات'}`;
+
+      if (txs.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-6 text-xs text-gray-500 border border-dashed border-white/10 rounded-2xl">
+            لا توجد حركات تحويش مسجلة بعد. اضغط على الأزرار بالأعلى للبدء!
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = txs.map((tx) => {
+        const isDeposit = tx.type === 'deposit';
+        return `
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/70 border border-white/5 hover:border-white/10 transition group">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center ${
+                isDeposit
+                  ? 'bg-emeraldLux-500/15 text-emeraldLux-400 border border-emeraldLux-500/25'
+                  : 'bg-rose-500/15 text-rose-400 border border-rose-500/25'
+              }">
+                ${isDeposit ? '↑' : '↓'}
+              </div>
+              <div>
+                <div class="text-xs font-semibold text-gray-200">${escapeHTML(tx.note || (isDeposit ? 'إيداع تحويش' : 'سحب مبلغ'))}</div>
+                <div class="text-[11px] text-gray-500 mt-0.5">${formatRelativeDate(tx.date)}</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+              <span class="text-sm font-bold tabular-nums ${isDeposit ? 'text-emeraldLux-400' : 'text-rose-400'}">
+                ${isDeposit ? '+' : '-'}${formatMoney(tx.amount, goal.currency)}
+              </span>
+              <button
+                onclick="undoTransaction('${tx.id}')"
+                class="p-1.5 rounded-lg text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                title="تراجع عن هذه العملية"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 7. Transactions (Deposit / Withdraw / Undo)
+    function handleCustomTransaction(type) {
+      const input = document.getElementById('custom-amount-input');
+      const val = parseFloat(input.value);
+
+      if (isNaN(val) || val <= 0) {
+        showToast('من فضلك أدخل مبلغاً صحيحاً أكبر من الصفر', 'warning');
+        input.focus();
+        return;
+      }
+
+      addTransaction(type, val, type === 'deposit' ? 'إضافة مخصصة' : 'سحب من الحصالة');
+      input.value = '';
+    }
+
+    function addTransaction(type, amount, note) {
+      const goal = getActiveGoal();
+      if (!goal) return;
+
+      const cleanAmount = Math.round((Number(amount) + Number.EPSILON) * 100) / 100;
+      if (cleanAmount <= 0) return;
+
+      const wasCompletedBefore = goal.savedAmount >= goal.targetAmount;
+
+      if (type === 'withdraw') {
+        if (goal.savedAmount <= 0) {
+          showToast('الحصالة فارغة بالفعل!', 'warning');
+          return;
+        }
+        const actualWithdraw = Math.min(goal.savedAmount, cleanAmount);
+        goal.savedAmount = Math.max(0, Math.round((goal.savedAmount - actualWithdraw) * 100) / 100);
+        goal.transactions.unshift({
+          id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          type: 'withdraw',
+          amount: actualWithdraw,
+          note,
+          date: new Date().toISOString()
+        });
+        showToast(`تم سحب ${formatMoney(actualWithdraw, goal.currency)}`, 'info');
+      } else {
+        goal.savedAmount = Math.round((goal.savedAmount + cleanAmount) * 100) / 100;
+        goal.transactions.unshift({
+          id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          type: 'deposit',
+          amount: cleanAmount,
+          note,
+          date: new Date().toISOString()
+        });
+
+        const isNowCompleted = goal.savedAmount >= goal.targetAmount;
+        if (!wasCompletedBefore && isNowCompleted) {
+          showToast('🎉 مبروك! وصلت لـ 100% من هدفك!', 'gold');
+          launchCelebrationConfetti();
+        } else {
+          showToast(`عاش! تم إضافة ${formatMoney(cleanAmount, goal.currency)} لحصالتك`, 'success');
+        }
+      }
+
+      saveState();
+      renderApp();
+    }
+
+    function undoTransaction(txId) {
+      const goal = getActiveGoal();
+      if (!goal) return;
+
+      const idx = goal.transactions.findIndex((t) => t.id === txId);
+      if (idx === -1) return;
+
+      const tx = goal.transactions[idx];
+      if (tx.type === 'deposit') {
+        goal.savedAmount = Math.max(0, Math.round((goal.savedAmount - tx.amount) * 100) / 100);
+      } else {
+        goal.savedAmount = Math.round((goal.savedAmount + tx.amount) * 100) / 100;
+      }
+
+      goal.transactions.splice(idx, 1);
+      saveState();
+      renderApp();
+      showToast('تم التراجع عن العملية وتحديث الرصيد', 'info');
+    }
+
+    function selectGoal(goalId) {
+      appState.activeGoalId = goalId;
+      saveState();
+      renderApp();
+    }
+
+    // 8. Create / Edit Goal Modal Logic
+    function renderIconPicker() {
+      const grid = document.getElementById('icon-picker-grid');
+      grid.innerHTML = GOAL_ICONS.map((icon) => `
+        <button
+          type="button"
+          onclick="selectModalIcon('${icon}')"
+          data-icon="${icon}"
+          class="icon-choice-btn h-10 rounded-xl bg-obsidian-900 border border-white/10 hover:border-champagne-500/50 flex items-center justify-center text-lg transition"
+        >
+          ${icon}
+        </button>
+      `).join('');
+    }
+
+    function selectModalIcon(icon) {
+      document.getElementById('goal-icon-input').value = icon;
+      document.querySelectorAll('.icon-choice-btn').forEach((btn) => {
+        if (btn.dataset.icon === icon) {
+          btn.classList.add('border-champagne-400', 'bg-champagne-500/20', 'scale-105');
+          btn.classList.remove('border-white/10', 'bg-obsidian-900');
+        } else {
+          btn.classList.remove('border-champagne-400', 'bg-champagne-500/20', 'scale-105');
+          btn.classList.add('border-white/10', 'bg-obsidian-900');
+        }
+      });
+    }
+
+    function renderCurrencySelector() {
+      const grid = document.getElementById('currency-selector-grid');
+      grid.innerHTML = Object.values(CURRENCIES).map((c) => `
+        <button
+          type="button"
+          onclick="selectModalCurrency('${c.code}')"
+          data-currency="${c.code}"
+          class="currency-choice-btn p-2.5 rounded-2xl bg-obsidian-900 border border-white/10 hover:border-champagne-500/40 text-right transition flex items-center justify-between"
+        >
+          <div>
+            <div class="text-xs font-bold text-white">${c.flag} ${c.code}</div>
+            <div class="text-[10px] text-gray-400">${c.name}</div>
+          </div>
+          <span class="text-xs font-bold text-champagne-400">${c.symbol}</span>
+        </button>
+      `).join('');
+    }
+
+    function selectModalCurrency(code) {
+      document.getElementById('goal-currency-input').value = code;
+      document.querySelectorAll('.currency-choice-btn').forEach((btn) => {
+        if (btn.dataset.currency === code) {
+          btn.classList.add('border-champagne-400', 'bg-champagne-500/15');
+          btn.classList.remove('border-white/10', 'bg-obsidian-900');
+        } else {
+          btn.classList.remove('border-champagne-400', 'bg-champagne-500/15');
+          btn.classList.add('border-white/10', 'bg-obsidian-900');
+        }
+      });
+    }
+
+    function openGoalModal(mode) {
+      const modal = document.getElementById('goal-modal');
+      const modeInput = document.getElementById('goal-form-mode');
+      const titleHeading = document.getElementById('modal-title');
+      const titleInput = document.getElementById('goal-title-input');
+      const targetInput = document.getElementById('goal-target-input');
+      const initialInput = document.getElementById('goal-initial-input');
+
+      modeInput.value = mode;
+
+      if (mode === 'edit') {
+        const goal = getActiveGoal();
+        if (!goal) return;
+        titleHeading.textContent = 'تعديل بيانات الهدف';
+        titleInput.value = goal.title;
+        targetInput.value = goal.targetAmount;
+        initialInput.value = goal.savedAmount;
+        selectModalIcon(goal.icon || '🎯');
+        selectModalCurrency(goal.currency || 'EGP');
+      } else {
+        titleHeading.textContent = 'هدف تحويش جديد';
+        titleInput.value = '';
+        targetInput.value = '';
+        initialInput.value = '';
+        selectModalIcon('🎧');
+        selectModalCurrency('EGP');
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => titleInput.focus(), 120);
+    }
+
+    function closeGoalModal() {
+      const modal = document.getElementById('goal-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function saveGoalFromModal(event) {
+      event.preventDefault();
+
+      const mode = document.getElementById('goal-form-mode').value;
+      const title = document.getElementById('goal-title-input').value.trim();
+      const icon = document.getElementById('goal-icon-input').value || '🎯';
+      const currency = document.getElementById('goal-currency-input').value || 'EGP';
+      const targetAmount = parseFloat(document.getElementById('goal-target-input').value);
+      const initialSaved = parseFloat(document.getElementById('goal-initial-input').value) || 0;
+
+      if (!title || isNaN(targetAmount) || targetAmount <= 0) {
+        showToast('يرجى إدخال اسم الهدف والمبلغ المطلوب بشكل صحيح', 'warning');
+        return;
+      }
+
+      if (mode === 'edit') {
+        const goal = getActiveGoal();
+        if (goal) {
+          goal.title = title;
+          goal.icon = icon;
+          goal.currency = currency;
+          goal.targetAmount = Math.round(targetAmount * 100) / 100;
+          goal.savedAmount = Math.max(0, Math.round(initialSaved * 100) / 100);
+          showToast('تم تحديث بيانات الهدف بنجاح', 'success');
+        }
+      } else {
+        const newId = 'goal_' + Date.now();
+        const cleanInitial = Math.max(0, Math.round(initialSaved * 100) / 100);
+        const newGoal = {
+          id: newId,
+          title,
+          icon,
+          currency,
+          targetAmount: Math.round(targetAmount * 100) / 100,
+          savedAmount: cleanInitial,
+          createdAt: new Date().toISOString(),
+          transactions: cleanInitial > 0
+            ? [{
+                id: 'tx_' + Date.now(),
+                type: 'deposit',
+                amount: cleanInitial,
+                note: 'رصيد البداية',
+                date: new Date().toISOString()
+              }]
+            : []
+        };
+        appState.goals.unshift(newGoal);
+        appState.activeGoalId = newId;
+        showToast('تم إنشاء الهدف! يلا نبدأ تحويش 💪', 'success');
+      }
+
+      saveState();
+      closeGoalModal();
+      renderApp();
+    }
+
+    // 9. Delete Confirmation Modal
+    function openConfirmDeleteModal() {
+      const modal = document.getElementById('delete-confirm-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeConfirmDeleteModal() {
+      const modal = document.getElementById('delete-confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmDeleteActiveGoal() {
+      const activeId = appState.activeGoalId;
+      appState.goals = appState.goals.filter((g) => g.id !== activeId);
+      appState.activeGoalId = appState.goals.length > 0 ? appState.goals[0].id : null;
+
+      saveState();
+      closeConfirmDeleteModal();
+      renderApp();
+      showToast('تم حذف الهدف', 'info');
+    }
+
+    // 10. Custom Toast Notification System
+    function showToast(message, variant = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+
+      const styles = {
+        success: 'bg-obsidian-800/95 border-emeraldLux-500/40 text-emeraldLux-300',
+        gold: 'bg-obsidian-800/95 border-champagne-400/60 text-champagne-300 shadow-gold-glow',
+        warning: 'bg-obsidian-800/95 border-amber-500/40 text-amber-300',
+        info: 'bg-obsidian-800/95 border-white/15 text-gray-200'
+      };
+
+      toast.className = `px-4 py-2.5 rounded-2xl border backdrop-blur-md text-xs font-bold shadow-xl animate-pop-in text-center ${styles[variant] || styles.info}`;
+      toast.textContent = message;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2600);
+    }
+
+    // 11. Celebration Confetti Effect when Goal Hits 100%
+    function launchCelebrationConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#D4AF37', '#F3E5AB', '#10B981', '#34D399', '#FFFFFF'];
+      const particles = Array.from({ length: 95 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 8 + 4,
+        h: Math.random() * 5 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speedY: Math.random() * 3.5 + 2.2,
+        speedX: (Math.random() - 0.5) * 2.5,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 8
+      }));
+
+      let frames = 0;
+      function animateConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p) => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rotation += p.rotationSpeed;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+
+        frames++;
+        if (frames < 170) {
+          requestAnimationFrame(animateConfetti);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animateConfetti();
+    }
+
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Allow pressing Enter inside custom amount input to deposit quickly
+    document.getElementById('custom-amount-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleCustomTransaction('deposit');
+      }
+    });
+
+    // Boot App
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
